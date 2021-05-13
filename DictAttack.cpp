@@ -1,7 +1,7 @@
 /*==================================================================================
  Name          : DictAttack.cpp
  Author        : Team #2: Chad Netwig, Parker Bjur, Damien Diaz, and Syedali Khan
- Last Updated  : 04/17/2021
+ Last Updated  : 05/13/2021
  Project       : Term Project for CS-265-70
  Description   : This program will prompt the user for a three letter password
                : string in lower-case. A Binary Search Tree holding the alphabet
@@ -11,23 +11,26 @@
 */
 
 
-    // UPDATE: 04-17-2021
+    // UPDATE: 05-13-2021
     //
     // To be implemented:
     //
     // 1. Do a compare against the user-inputed password in the "k" for loop
+    //    DONE 5/12/21 - CLN
     // 2. Instead of specifying the array as [25], use the treeSize int value to make the code more flexible
+    //    DONE 5/13/21 - CLN
     // 3. Parker to create class to take string value and convert it into decimal integers and return array
     // 4. Damien and Ali to test functionality
 
 
 
-#include<iostream>
+#include <iostream>
 
 using namespace std;
 
+static int pwIterations  = 0;    // keeps count of how many iterations it took to crack the password
 
-// Setup BinaryNodes Structure for left & right children and their parent
+/* Setup BinaryNodes Structure for left & right children and their parent */
 struct Node
 {
     int key;
@@ -124,18 +127,67 @@ int size( Node *tree )
 }; // end Set_BST class
 
 
+bool passwordCrack(string pwCrack, string pwUser)
+{
+
+    // cout << "\npw test is: " << pw << endl;
+    if (pwCrack == pwUser){
+
+        cout << "\n\nPasword cracked!" << endl;
+        cout << "Brute-force attempts: " << pwIterations << endl;
+        cout << "The password is: " << pwCrack << endl;
+        return 1;   // return true (pw found)
+    }
+
+return 0;
+}
+
+int testPassword(int (&myArr)[25], string pwTest, string password)
+{
+    int i, j, k;
+    string disp;
+
+        cout << "\nDisplay password crack attempts? [y/n]: ";
+        cin >> disp;
+        cout << "\nStarting Brute-Force Attack on the Password..." << endl;
+
+        for (i = 0; i <= 25; i++) {
+
+             for (j = 0; j <= 25; j++) {
+
+                for (k=0; k <= 25; k++) {
+                    if (disp == "y" || disp == "Y") { cout << char(myArr[i]) << char(myArr[j]) << char(myArr[k]) << ", "; }
+
+                    // build pwTest string
+                    pwTest.clear();
+                    pwTest.push_back(myArr[i]);
+                    pwTest.push_back(myArr[j]);
+                    pwTest.push_back(myArr[k]);
+                    pwIterations++;
+                    // check user-entered password against iteration. If found break out
+                    if (passwordCrack (pwTest, password)) { return 1; }
+                } // end k for
+             } // end j for
+        } //end i for
+        cout << "\n\nUnable to crack password!" << endl;
+        cout << "Please make sure that the password entered is exactly three lower-case letters" << endl;
+        return 0;
+} // end testPassword
+
+
+
 int main()
 {
  /*
 
     DictAttack
 
-
  */
 
-int treeSize =0;
+ //const int TREE_SIZE = 0;
 
-string password, charCat;
+string password;                // holds user-entered password
+string pwTest = "";
 
  /*
    Create BST Tree with following structure
@@ -155,30 +207,25 @@ string password, charCat;
                         This holds the ascii decimal for a - z (lower-case)
                                     */
 
-    // create myTree pointer to Node structure and set the root to NULL
-    struct Node *myTree = NULL;
+    struct Node *myTree = NULL;     // create myTree pointer to Node structure and set the root to NULL
 
-    // create object MyBST from Set_BST class
-    Set_BST MyBST;
+    Set_BST MyBST;                  // create object myBST from Set_BST class
 
-    // build tree with alphabet in lowercase using ascii decimal
-
+    /*  build tree with alphabet in lowercase using ascii decimal */
     myTree = MyBST.insert(myTree, 97);
-
     for (int i = 98; i <= 122; i++) {
 
         MyBST.insert(myTree, i);
     }
 
 
-    // get treeSize
-    treeSize = MyBST.size(myTree);
-    cout << "Tree size is: " << treeSize;
+    const int TREE_SIZE = MyBST.size(myTree);  // get treeSize
+    cout << "Tree size is: " << TREE_SIZE;
 
+    //const int TREE_SIZE = 25;
 
-    // infix traversal stores values in array along the way
     int arr[25];
-    MyBST.infix(myTree, arr);
+    MyBST.infix(myTree, arr);       // infix traversal stores values in array along the way
 
 
     // Prompt user for a 3-letter password
@@ -186,31 +233,12 @@ string password, charCat;
     cin >> password;
 
 
-      // Take array that was built from tree -- which is essentially the lowercase alphabet -- and dump all combinations of a string
-    // of length 3 to the screen. THIS SCREEN DUMP IS JUST A DEBUG STEP FOR NOW.
+    /* 1. Take array that was built from tree -- which is essentially the lowercase alphabet -- and dump all combinations of a string
+          of length 3 to the screen.
+       2. Along the way, brute-force check iterations against the user-entered password and display the cracked password if found */
 
 
-    int i, j, k;
-
-        for (i = 0; i <= 25; i++) {
-
-             for (j = 0; j <= 25; j++) {
-
-                for (k=0; k <= 25; k++) {
-                    cout << char(arr[i]) << char(arr[j]) << char(arr[k]) << ", ";
-                }
-             }
-        }
-
-    // This is just a debug test to dump the lowercase alphabet alphabet
-    cout << "\nDump alphabet by converting from ascii decimal to character: \n";
-    for (i=97; i <=122; i++){
-        char asciiChar = i;
-        cout << asciiChar << ", ";
-        charCat += asciiChar;
-    }
-        // concatenate chars into string
-        cout << "\nConcatenated password string is: " << charCat;
+    testPassword(arr, pwTest, password);
 
 
     return 0;
