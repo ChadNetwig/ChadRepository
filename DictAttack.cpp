@@ -151,6 +151,7 @@ int testPassword(int (&myArr)[25], string pwTest, string password)
         cin >> disp;
         cout << "\nStarting Brute-Force Attack on the Password..." << endl;
 
+        // loop through all possible three letter combinations using embedded for loops
         for (i = 0; i <= 25; i++) {
 
              for (j = 0; j <= 25; j++) {
