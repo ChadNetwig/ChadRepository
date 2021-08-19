@@ -7,4 +7,4 @@ So as an exercise, why don't each of you make an edit to the code and do a pull 
 
 Thanks,
 
-Chad
+Chad Netwig
